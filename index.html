@@ -355,15 +355,27 @@
         </div>
       </div>
 
-      <!-- ABA 4: PETS FINALIZADOS (CONTROLE OPERACIONAL DO DIA) -->
+      <!-- ABA 4: PETS FINALIZADOS (CONTROLE OPERACIONAL DO DIA + CONSULTA POR DATA) -->
       <div id="client-sec-finalizados" class="hidden space-y-3">
         <div class="bg-white rounded-2xl p-4 shadow-sm border-2 space-y-3" style="border-color: var(--brand-card-border);">
-          <div class="flex items-center justify-between border-b pb-2.5" style="border-color: var(--brand-card-border);">
-            <div>
-              <h3 class="font-bold text-slate-800 text-sm sm:text-base">✅ Pets Finalizados Hoje (Operacional)</h3>
-              <p class="text-[11px] text-slate-500">Controle de produção do dia: quem foi atendido, serviços feitos e status do pagamento.</p>
+          <div class="border-b pb-3 space-y-2.5" style="border-color: var(--brand-card-border);">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h3 id="done-section-title" class="font-bold text-slate-800 text-sm sm:text-base">✅ Pets Finalizados Hoje (Operacional)</h3>
+                <p class="text-[11px] text-slate-500">Controle de produção: veja os atendimentos concluídos hoje ou mude a data para consultar dias passados.</p>
+              </div>
+              <span id="counter-stat-done" class="text-xs bg-[#6AB43E] text-white px-2.5 py-1 rounded-full font-bold shrink-0">0</span>
             </div>
-            <span id="counter-stat-done" class="text-xs bg-[#6AB43E] text-white px-2.5 py-1 rounded-full font-bold">0</span>
+
+            <!-- Filtro de Data dos Finalizados -->
+            <div class="flex flex-wrap items-center gap-1.5 pt-1">
+              <button type="button" onclick="setDoneDateFilter('today')" id="done-btn-today" class="px-3 py-1.5 rounded-lg brand-primary-bg text-xs font-bold">Hoje</button>
+              <button type="button" onclick="setDoneDateFilter('yesterday')" id="done-btn-yesterday" class="px-3 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold">Ontem</button>
+              <div class="flex items-center gap-1.5 ml-auto">
+                <span class="text-[11px] font-semibold text-slate-500">Data:</span>
+                <input type="date" id="done-filter-date" onchange="setDoneDateFilter('date')" class="px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-semibold bg-white" />
+              </div>
+            </div>
           </div>
           <div id="counter-bookings-done" class="space-y-3"></div>
         </div>
@@ -1110,6 +1122,7 @@
     let clientSortMode = 'az';
     let historyFilterMode = 'all';
     let agendaFilterMode = 'future';
+    let doneFilterDate = '';
     let reschedulingBookingId = null;
     let checkoutBookingId = null;
     let selectedCheckoutMethod = 'Pix';
@@ -1540,6 +1553,15 @@
       return `${year}-${month}-${day}`;
     }
 
+    function getYesterdayLocalStr() {
+      const d = new Date();
+      d.setDate(d.getDate() - 1);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     function getTomorrowLocalStr() {
       const d = new Date();
       d.setDate(d.getDate() + 1);
@@ -1553,12 +1575,14 @@
       if (!dateStr) return '';
       const today = getTodayLocalStr();
       const tomorrow = getTomorrowLocalStr();
+      const yesterday = getYesterdayLocalStr();
       const [y, m, d] = dateStr.split('-');
       const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
       const dt = new Date(dateStr + 'T12:00:00');
       const wName = weekDays[dt.getDay()];
       if (dateStr === today) return `Hoje (${d}/${m})`;
       if (dateStr === tomorrow) return `Amanhã — ${wName}, ${d}/${m}`;
+      if (dateStr === yesterday) return `Ontem — ${wName}, ${d}/${m}`;
       return `${wName}, ${d}/${m}/${y}`;
     }
 
@@ -1583,7 +1607,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('booking-date').value = getTodayLocalStr();
+      const todayStr = getTodayLocalStr();
+      document.getElementById('booking-date').value = todayStr;
+      doneFilterDate = todayStr;
+      const doneDateInput = document.getElementById('done-filter-date');
+      if (doneDateInput) doneDateInput.value = todayStr;
+
       applyBrandTheme();
       applyStoreBranding();
       renderAllClient();
@@ -1782,6 +1811,9 @@
           btn.className = spanClass + 'px-2 py-2.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white/60 transition-colors flex items-center justify-center gap-1';
         }
       });
+      if (tab === 'finalizados') {
+        setDoneDateFilter('today');
+      }
       if (tab !== 'novo') {
         syncWithCloud(false, false);
       }
@@ -2039,8 +2071,8 @@
         species: clientState.species, 
         sizeName: sz ? sz.name : 'Padrão',
         ownerName, 
-        ownerPhone,
-        ownerAddress,
+        ownerPhone, 
+        ownerAddress, 
         serviceName: combinedServiceName, 
         extras: extrasNames,
         date: dateVal, 
@@ -2313,27 +2345,114 @@
       }).join('');
     }
 
-    // ================= ABA 4: FINALIZADOS (CONTROLE OPERACIONAL) =================
+    // ================= ABA 4: FINALIZADOS (CONTROLE OPERACIONAL POR DATA) =================
+    function setDoneDateFilter(mode) {
+      const todayStr = getTodayLocalStr();
+      const yesterdayStr = getYesterdayLocalStr();
+      const dateInput = document.getElementById('done-filter-date');
+
+      if (mode === 'today') {
+        doneFilterDate = todayStr;
+        if (dateInput) dateInput.value = todayStr;
+      } else if (mode === 'yesterday') {
+        doneFilterDate = yesterdayStr;
+        if (dateInput) dateInput.value = yesterdayStr;
+      } else if (mode === 'date' && dateInput && dateInput.value) {
+        doneFilterDate = dateInput.value;
+      }
+
+      renderCounterFinalizados();
+    }
+
     function renderCounterFinalizados() {
-      const doneBookings = bookings.filter(b => b.status === 'Finalizado');
-      document.getElementById('counter-stat-done').textContent = doneBookings.length;
+      const todayStr = getTodayLocalStr();
+      const yesterdayStr = getYesterdayLocalStr();
+
+      if (!doneFilterDate) {
+        doneFilterDate = todayStr;
+        const dateInput = document.getElementById('done-filter-date');
+        if (dateInput) dateInput.value = todayStr;
+      }
+
+      // Atualiza estilos dos botões Hoje / Ontem
+      const btnToday = document.getElementById('done-btn-today');
+      const btnYesterday = document.getElementById('done-btn-yesterday');
+      if (btnToday) {
+        btnToday.className = doneFilterDate === todayStr
+          ? 'px-3 py-1.5 rounded-lg brand-primary-bg text-xs font-bold'
+          : 'px-3 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold';
+      }
+      if (btnYesterday) {
+        btnYesterday.className = doneFilterDate === yesterdayStr
+          ? 'px-3 py-1.5 rounded-lg brand-primary-bg text-xs font-bold'
+          : 'px-3 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold';
+      }
+
+      // Atualiza título da seção conforme a data selecionada
+      const titleEl = document.getElementById('done-section-title');
+      if (titleEl) {
+        titleEl.textContent = doneFilterDate === todayStr
+          ? '✅ Pets Finalizados Hoje (Operacional)'
+          : `✅ Pets Finalizados — ${formatDateBR(doneFilterDate)}`;
+      }
+
+      // Unifica finalizados abertos (bookings) + finalizados de dias encerrados (historyArchive)
+      const activeDone = bookings
+        .filter(b => b.status === 'Finalizado')
+        .map(b => ({ ...b, _isArchived: false }));
+      const activeDoneIds = new Set(activeDone.map(b => Number(b.id)));
+      const archivedDone = (historyArchive || [])
+        .filter(h => !activeDoneIds.has(Number(h.id)))
+        .map(h => ({ ...h, status: 'Finalizado', _isArchived: true }));
+
+      const allDone = [...activeDone, ...archivedDone];
+
+      // O badge da aba superior mostra sempre o total de HOJE
+      const todayDoneCount = allDone.filter(b => (b.date || todayStr) === todayStr).length;
       const tabDoneBadge = document.getElementById('tab-done-badge');
-      if (tabDoneBadge) tabDoneBadge.textContent = doneBookings.length;
-      
+      if (tabDoneBadge) tabDoneBadge.textContent = todayDoneCount;
+
+      // Filtra estritamente pela data escolhida (por padrão: hoje)
+      const filteredDone = allDone.filter(b => (b.date || todayStr) === doneFilterDate);
+      document.getElementById('counter-stat-done').textContent = filteredDone.length;
+
       const list = document.getElementById('counter-bookings-done');
-      if (doneBookings.length === 0) {
-        list.innerHTML = `<p class="text-center py-6 text-xs text-slate-400">Nenhum pet finalizado hoje ainda.</p>`;
+      if (filteredDone.length === 0) {
+        const emptyLabel = doneFilterDate === todayStr ? 'hoje' : `em ${formatDateBR(doneFilterDate)}`;
+        list.innerHTML = `<p class="text-center py-6 text-xs text-slate-400">Nenhum pet finalizado ${emptyLabel}.</p>`;
         return;
       }
-      
-      list.innerHTML = doneBookings.map(b => {
+
+      list.innerHTML = filteredDone.map(b => {
         const payInfo = pdvState.paidBookings[b.id];
-        const payBadge = payInfo 
-          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-800">💚 Pago (${payInfo.method})</span>`
-          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⏳ Aguardando Pagamento</span>`;
+        let payBadge = '';
+        if (b._isArchived) {
+          payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700">🔒 Caixa Encerrado</span>`;
+        } else if (payInfo) {
+          payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-800">💚 Pago (${payInfo.method})</span>`;
+        } else {
+          payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⏳ Aguardando Pagamento</span>`;
+        }
+
+        const footerActions = b._isArchived
+          ? `<span class="text-[11px] text-slate-500 font-semibold">📁 Registro arquivado no histórico do dia</span>`
+          : `
+            <button onclick="changeStatus(${b.id}, 'Pronto')" class="text-[11px] text-blue-600 font-semibold underline">
+              ↩️ Voltar p/ Fila
+            </button>
+            ${!payInfo ? `
+              <button onclick="openCheckoutModal(${b.id})" class="px-3 py-1.5 rounded-lg bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm">
+                💰 Cobrar no Caixa
+              </button>
+            ` : `
+              <button onclick="undoBookingPayment(${b.id})" class="text-[11px] text-slate-500 underline">
+                Estornar Pagamento
+              </button>
+            `}
+          `;
 
         return `
-          <div class="p-3.5 rounded-xl border ${payInfo ? 'theme-stage-box' : 'border-amber-300 bg-amber-50/70'} space-y-2">
+          <div class="p-3.5 rounded-xl border ${payInfo || b._isArchived ? 'theme-stage-box' : 'border-amber-300 bg-amber-50/70'} space-y-2">
             <div class="flex flex-wrap items-center justify-between gap-1">
               <div>
                 <span class="font-bold text-sm text-slate-800">🐾 ${b.petName}</span>
@@ -2348,18 +2467,7 @@
               <p class="text-[11px] text-slate-500">🕒 Atendimento de ${formatDateBR(b.date)} às ${b.time || '--:--'}</p>
             </div>
             <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t" style="border-color: var(--brand-card-border);">
-              <button onclick="changeStatus(${b.id}, 'Pronto')" class="text-[11px] text-blue-600 font-semibold underline">
-                ↩️ Voltar p/ Fila
-              </button>
-              ${!payInfo ? `
-                <button onclick="openCheckoutModal(${b.id})" class="px-3 py-1.5 rounded-lg bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm">
-                  💰 Cobrar no Caixa
-                </button>
-              ` : `
-                <button onclick="undoBookingPayment(${b.id})" class="text-[11px] text-slate-500 underline">
-                  Estornar Pagamento
-                </button>
-              `}
+              ${footerActions}
             </div>
           </div>
         `;
@@ -3373,7 +3481,7 @@
       config.storeName = document.getElementById('cfg-store-name').value.trim(); 
       config.bannerTitle = document.getElementById('cfg-banner-title').value.trim();
       config.storeAddress = document.getElementById('cfg-store-address').value.trim(); 
-      config.whatsapp = document.getElementById('cfg-whatsapp').value.trim();
+      config.whatsapp = document.getElementById('cfg-whatsapp').value.trim(); 
       config.pin = document.getElementById('cfg-pin').value.trim(); 
       saveConfig(); 
       alert('✅ Logos, cores e configurações salvas na nuvem!');
