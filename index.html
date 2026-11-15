@@ -130,14 +130,14 @@
 
   <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-5 space-y-5">
 
-    <!-- ==================== TELA 1: BALCÃO (5 ABAS NO TOPO) ==================== -->
+    <!-- ==================== TELA 1: BALCÃO (5 ABAS NA ORDEM OPERACIONAL) ==================== -->
     <section id="view-client" class="space-y-4">
       
       <div class="brand-banner-bg rounded-2xl p-5 text-white shadow-md">
         <h1 class="font-brand text-2xl font-bold leading-tight" id="banner-title">Painel de Balcão — Banho & Tosa</h1>
       </div>
 
-      <!-- 5 BOTÕES DE NAVEGAÇÃO DO BALCÃO -->
+      <!-- 5 BOTÕES: REGISTRAR -> PETS NA FILA -> FINALIZADOS -> CAIXA PDV -> AGENDA -->
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5 theme-nav-bar p-1.5 rounded-xl">
         <button onclick="switchClientTab('novo')" id="tab-cli-novo" class="px-2 py-2.5 rounded-lg text-xs font-bold bg-white shadow-sm brand-primary-text flex items-center justify-center gap-1">
           <span>📝 Registrar</span>
@@ -146,17 +146,17 @@
           <span>📋 Pets na Fila</span>
           <span id="tab-fila-badge" class="px-1.5 py-0.5 text-[10px] rounded-full brand-primary-bg font-bold leading-none">0</span>
         </button>
-        <button onclick="switchClientTab('agenda')" id="tab-cli-agenda" class="px-2 py-2.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white/60 transition-colors flex items-center justify-center gap-1">
-          <span>📅 Agenda</span>
-          <span id="tab-agenda-badge" class="px-1.5 py-0.5 text-[10px] rounded-full brand-accent-bg font-bold leading-none">0</span>
-        </button>
         <button onclick="switchClientTab('finalizados')" id="tab-cli-finalizados" class="px-2 py-2.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white/60 transition-colors flex items-center justify-center gap-1">
           <span>✅ Finalizados</span>
           <span id="tab-done-badge" class="px-1.5 py-0.5 text-[10px] rounded-full bg-slate-700 text-white font-bold leading-none">0</span>
         </button>
-        <button onclick="switchClientTab('caixa')" id="tab-cli-caixa" class="col-span-2 sm:col-span-1 px-2 py-2.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white/60 transition-colors flex items-center justify-center gap-1">
+        <button onclick="switchClientTab('caixa')" id="tab-cli-caixa" class="px-2 py-2.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white/60 transition-colors flex items-center justify-center gap-1">
           <span>💵 Caixa PDV</span>
           <span id="tab-unpaid-badge" class="hidden px-1.5 py-0.5 text-[10px] rounded-full bg-amber-500 text-white font-bold leading-none">0</span>
+        </button>
+        <button onclick="switchClientTab('agenda')" id="tab-cli-agenda" class="col-span-2 sm:col-span-1 px-2 py-2.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white/60 transition-colors flex items-center justify-center gap-1">
+          <span>📅 Agenda</span>
+          <span id="tab-agenda-badge" class="px-1.5 py-0.5 text-[10px] rounded-full brand-accent-bg font-bold leading-none">0</span>
         </button>
       </div>
 
@@ -314,13 +314,13 @@
         </form>
       </div>
 
-      <!-- ABA 2: PETS NA FILA (HOJE) -->
+      <!-- ABA 2: PETS NA FILA (PRODUÇÃO: AGUARDANDO / NO BANHO) -->
       <div id="client-sec-fila" class="hidden space-y-3">
         <div class="bg-white rounded-2xl p-4 shadow-sm border-2" style="border-color: var(--brand-card-border);">
           <div class="flex items-center justify-between border-b pb-2.5 mb-3" style="border-color: var(--brand-card-border);">
             <div>
-              <h3 class="font-bold text-slate-800 text-sm sm:text-base">📋 Pets na Fila de Hoje</h3>
-              <p class="text-[11px] text-slate-500">Mude para <strong>✨ Pronto</strong> para liberar o aviso no Zap e o acerto no Caixa (que finaliza o pet automaticamente).</p>
+              <h3 class="font-bold text-slate-800 text-sm sm:text-base">📋 Pets na Fila de Hoje (Em Atendimento)</h3>
+              <p class="text-[11px] text-slate-500">Ao finalizar o banho/tosa, o pet vai para <strong>✅ Finalizados</strong> e abre na fila de recebimento do <strong>💵 Caixa PDV</strong>.</p>
             </div>
             <span id="counter-badge-active" class="text-xs brand-primary-bg px-2.5 py-1 rounded-full font-bold">0</span>
           </div>
@@ -328,41 +328,14 @@
         </div>
       </div>
 
-      <!-- ABA 3: AGENDA (FUTUROS E REMARCAÇÕES) -->
-      <div id="client-sec-agenda" class="hidden space-y-3">
-        <div class="bg-white rounded-2xl p-4 shadow-sm border-2 space-y-3" style="border-color: var(--brand-card-border);">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3" style="border-color: var(--brand-card-border);">
-            <div>
-              <h3 class="font-bold text-slate-800 text-sm sm:text-base">📅 Agenda de Marcações</h3>
-              <p class="text-[11px] text-slate-500">Consulte horários marcados, remarque para outro dia ou cancele.</p>
-            </div>
-            <button onclick="prepareFutureBooking()" class="px-3 py-1.5 rounded-xl brand-accent-bg text-xs font-bold shadow-sm">
-              + Agendar Novo
-            </button>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-1.5">
-            <button onclick="setAgendaFilter('tomorrow')" id="agfilter-tomorrow" class="agfilter-btn px-2.5 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold">Amanhã</button>
-            <button onclick="setAgendaFilter('7d')" id="agfilter-7d" class="agfilter-btn px-2.5 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold">Próx. 7 Dias</button>
-            <button onclick="setAgendaFilter('future')" id="agfilter-future" class="agfilter-btn px-2.5 py-1.5 rounded-lg brand-primary-bg text-xs font-bold">Todos Futuros</button>
-            <button onclick="setAgendaFilter('all')" id="agfilter-all" class="agfilter-btn px-2.5 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold">Hoje + Futuros</button>
-            <div class="flex items-center gap-1 ml-auto">
-              <input type="date" id="agenda-specific-date" onchange="setAgendaFilter('date')" class="px-2 py-1 rounded-lg border border-slate-300 text-xs font-semibold bg-white" />
-            </div>
-          </div>
-
-          <div id="counter-bookings-agenda" class="space-y-3 pt-1"></div>
-        </div>
-      </div>
-
-      <!-- ABA 4: PETS FINALIZADOS (CONTROLE OPERACIONAL DO DIA + CONSULTA POR DATA) -->
+      <!-- ABA 3: PETS FINALIZADOS (AGUARDANDO DONO / RETIRADA / RECEBIMENTO) -->
       <div id="client-sec-finalizados" class="hidden space-y-3">
         <div class="bg-white rounded-2xl p-4 shadow-sm border-2 space-y-3" style="border-color: var(--brand-card-border);">
           <div class="border-b pb-3 space-y-2.5" style="border-color: var(--brand-card-border);">
             <div class="flex items-center justify-between gap-2">
               <div>
-                <h3 id="done-section-title" class="font-bold text-slate-800 text-sm sm:text-base">✅ Pets Finalizados Hoje (Operacional)</h3>
-                <p class="text-[11px] text-slate-500">Pets concluídos e acertados hoje, ou altere a data para consultar dias anteriores.</p>
+                <h3 id="done-section-title" class="font-bold text-slate-800 text-sm sm:text-base">✅ Pets Finalizados Hoje (Aguardando Retirada / Entregues)</h3>
+                <p class="text-[11px] text-slate-500">Avise o dono, receba o pagamento (que marca como <strong>Entregue</strong>) ou entregue para receber depois.</p>
               </div>
               <span id="counter-stat-done" class="text-xs bg-[#6AB43E] text-white px-2.5 py-1 rounded-full font-bold shrink-0">0</span>
             </div>
@@ -381,14 +354,14 @@
         </div>
       </div>
 
-      <!-- ABA 5: CAIXA PDV (MODO DISCRETO NO BALCÃO + FECHAMENTO SEPARADO) -->
+      <!-- ABA 4: CAIXA PDV (FILA DE RECEBIMENTO & RETIRADA + FECHAMENTO PRIVADO) -->
       <div id="client-sec-caixa" class="hidden space-y-4">
         
         <!-- Barra de Ações Rápidas do PDV (Sem expor faturamento ou saldo na tela do PC) -->
         <div class="bg-slate-900 text-white rounded-2xl p-4 shadow-md flex flex-wrap items-center justify-between gap-3">
           <div>
             <span class="text-[10px] uppercase tracking-wider font-bold brand-primary-text">Frente de Caixa • PDV</span>
-            <h2 class="font-brand text-xl font-bold">Recebimentos e Balcão</h2>
+            <h2 class="font-brand text-xl font-bold">Recebimentos e Saída</h2>
           </div>
           <div class="flex flex-wrap gap-2">
             <button onclick="openFloatModal()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-amber-300">
@@ -403,12 +376,12 @@
           </div>
         </div>
 
-        <!-- Bloco 1: Pets Prontos para Acerto (Finaliza automaticamente ao receber) -->
+        <!-- Fila de Retirada & Recebimento no PDV -->
         <div class="bg-white rounded-2xl p-4 shadow-sm border-2 space-y-3" style="border-color: var(--brand-card-border);">
           <div class="flex items-center justify-between border-b pb-2.5" style="border-color: var(--brand-card-border);">
             <div>
-              <h3 class="font-bold text-slate-800 text-sm">✨ Prontos para Acerto (Banho & Tosa)</h3>
-              <p class="text-[11px] text-slate-500">Ao confirmar o pagamento abaixo, o pet é movido automaticamente para <strong>✅ Finalizados</strong>.</p>
+              <h3 class="font-bold text-slate-800 text-sm">💳 Fila de Retirada e Recebimento (Pets Finalizados)</h3>
+              <p class="text-[11px] text-slate-500">Quando a dona vier retirar, clique em <strong>Receber e Dar Saída</strong> para confirmar o pagamento e marcar como <strong>Entregue</strong>.</p>
             </div>
             <span id="pdv-pending-count" class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold">0</span>
           </div>
@@ -436,6 +409,34 @@
         </div>
 
       </div>
+
+      <!-- ABA 5: AGENDA (ÚLTIMO BOTÃO — FUTUROS E REMARCAÇÕES) -->
+      <div id="client-sec-agenda" class="hidden space-y-3">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border-2 space-y-3" style="border-color: var(--brand-card-border);">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3" style="border-color: var(--brand-card-border);">
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm sm:text-base">📅 Agenda de Marcações</h3>
+              <p class="text-[11px] text-slate-500">Consulte horários marcados, remarque para outro dia ou cancele.</p>
+            </div>
+            <button onclick="prepareFutureBooking()" class="px-3 py-1.5 rounded-xl brand-accent-bg text-xs font-bold shadow-sm">
+              + Agendar Novo
+            </button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button onclick="setAgendaFilter('tomorrow')" id="agfilter-tomorrow" class="agfilter-btn px-2.5 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold">Amanhã</button>
+            <button onclick="setAgendaFilter('7d')" id="agfilter-7d" class="agfilter-btn px-2.5 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold">Próx. 7 Dias</button>
+            <button onclick="setAgendaFilter('future')" id="agfilter-future" class="agfilter-btn px-2.5 py-1.5 rounded-lg brand-primary-bg text-xs font-bold">Todos Futuros</button>
+            <button onclick="setAgendaFilter('all')" id="agfilter-all" class="agfilter-btn px-2.5 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold">Hoje + Futuros</button>
+            <div class="flex items-center gap-1 ml-auto">
+              <input type="date" id="agenda-specific-date" onchange="setAgendaFilter('date')" class="px-2 py-1 rounded-lg border border-slate-300 text-xs font-semibold bg-white" />
+            </div>
+          </div>
+
+          <div id="counter-bookings-agenda" class="space-y-3 pt-1"></div>
+        </div>
+      </div>
+
     </section>
 
     <!-- ==================== TELA 2: PAINEL DO DONO ==================== -->
@@ -482,7 +483,7 @@
       <div id="admin-sec-fila" class="space-y-4">
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div class="bg-white p-3 rounded-2xl border-2 theme-stage-box shadow-sm text-center">
-            <span class="text-[10px] text-slate-600 font-semibold uppercase">Na Fila Hoje</span>
+            <span class="text-[10px] text-slate-600 font-semibold uppercase">Em Atendimento</span>
             <p id="stat-total" class="font-brand text-xl font-bold text-slate-800">0</p>
           </div>
           <div class="bg-white p-3 rounded-2xl border-2 theme-stage-box shadow-sm text-center">
@@ -881,8 +882,8 @@
         </div>
       </div>
 
-      <p id="checkout-flow-hint" class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl">
-        ✅ Ao confirmar, o atendimento será marcado como pago e movido para <strong>Finalizados</strong>.
+      <p id="checkout-flow-hint" class="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl">
+        ✅ Ao confirmar, o pagamento será lançado no caixa e o pet será marcado como <strong>Entregue</strong>.
       </p>
 
       <div>
@@ -908,7 +909,7 @@
 
       <div class="grid grid-cols-2 gap-2 pt-2">
         <button onclick="closeCheckoutModal()" class="py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Cancelar</button>
-        <button onclick="confirmCheckoutPayment()" class="py-2.5 rounded-xl bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow">✅ Acertar e Finalizar</button>
+        <button onclick="confirmCheckoutPayment()" id="btn-confirm-checkout" class="py-2.5 rounded-xl bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow">✅ Receber e Entregar</button>
       </div>
     </div>
   </div>
@@ -1148,6 +1149,11 @@
       selectedTime: config.timeSlots[0] || '09:00',
       isCustomService: false
     };
+
+    // Verifica se o serviço técnico (Banho/Tosa) já foi finalizado
+    function isServiceFinished(status) {
+      return status === 'Finalizado' || status === 'Entregue' || status === 'Pronto';
+    }
 
     // ================= MOTOR DE TEMAS E CORES =================
     function shadeHexColor(hex, percent) {
@@ -1404,7 +1410,7 @@
         time: r.time || '',
         notes: r.notes || '',
         total: Number(r.total) || 0,
-        status: 'Finalizado',
+        status: 'Entregue',
         closedAt: r.closed_at || ''
       };
     }
@@ -1814,10 +1820,10 @@
     }
 
     function switchClientTab(tab) {
-      ['novo', 'fila', 'agenda', 'finalizados', 'caixa'].forEach(t => {
+      ['novo', 'fila', 'finalizados', 'caixa', 'agenda'].forEach(t => {
         document.getElementById('client-sec-' + t).classList.toggle('hidden', t !== tab);
         const btn = document.getElementById('tab-cli-' + t);
-        const spanClass = t === 'caixa' ? 'col-span-2 sm:col-span-1 ' : '';
+        const spanClass = t === 'agenda' ? 'col-span-2 sm:col-span-1 ' : '';
         if (t === tab) {
           btn.className = spanClass + 'px-2 py-2.5 rounded-lg text-xs font-bold bg-white shadow-sm brand-primary-text transition-colors flex items-center justify-center gap-1';
         } else {
@@ -2251,7 +2257,8 @@
 
     function renderCounterFila() {
       const todayStr = getTodayLocalStr();
-      const activeBookings = bookings.filter(b => b.status !== 'Finalizado' && (!b.date || b.date <= todayStr));
+      // Fila mostra apenas pets que ainda estão aguardando ou em banho/tosa
+      const activeBookings = bookings.filter(b => !isServiceFinished(b.status) && (!b.date || b.date <= todayStr));
       const list = document.getElementById('counter-bookings-active');
       
       document.getElementById('counter-badge-active').textContent = activeBookings.length;
@@ -2259,7 +2266,7 @@
       if (tabFilaBadge) tabFilaBadge.textContent = activeBookings.length;
 
       if (activeBookings.length === 0) {
-        list.innerHTML = `<p class="text-center py-6 text-xs text-slate-400">Nenhum pet na fila de hoje no momento.</p>`;
+        list.innerHTML = `<p class="text-center py-6 text-xs text-slate-400">Nenhum pet aguardando ou no banho no momento.</p>`;
         return;
       }
       list.innerHTML = activeBookings.map(b => buildBookingCardHtml(b, false)).join('');
@@ -2284,12 +2291,12 @@
       const tomorrowStr = getTomorrowLocalStr();
       const specDate = document.getElementById('agenda-specific-date')?.value;
 
-      const futureBookingsCount = bookings.filter(b => b.status !== 'Finalizado' && b.date > todayStr).length;
+      const futureBookingsCount = bookings.filter(b => !isServiceFinished(b.status) && b.date > todayStr).length;
       const tabAgendaBadge = document.getElementById('tab-agenda-badge');
       if (tabAgendaBadge) tabAgendaBadge.textContent = futureBookingsCount;
 
       let filtered = bookings.filter(b => {
-        if (b.status === 'Finalizado') return false;
+        if (isServiceFinished(b.status)) return false;
         if (agendaFilterMode === 'tomorrow') return b.date === tomorrowStr;
         if (agendaFilterMode === 'future') return b.date > todayStr;
         if (agendaFilterMode === 'all') return b.date >= todayStr;
@@ -2358,7 +2365,7 @@
       }).join('');
     }
 
-    // ================= ABA 4: FINALIZADOS (CONTROLE OPERACIONAL POR DATA) =================
+    // ================= ABA 3: FINALIZADOS (AGUARDANDO RETIRADA / ENTREGUES + RECEBIMENTO) =================
     function setDoneDateFilter(mode) {
       const todayStr = getTodayLocalStr();
       const yesterdayStr = getYesterdayLocalStr();
@@ -2387,7 +2394,6 @@
         if (dateInput) dateInput.value = todayStr;
       }
 
-      // Atualiza estilos dos botões Hoje / Ontem
       const btnToday = document.getElementById('done-btn-today');
       const btnYesterday = document.getElementById('done-btn-yesterday');
       if (btnToday) {
@@ -2401,31 +2407,28 @@
           : 'px-3 py-1.5 rounded-lg theme-stage-box border text-slate-700 text-xs font-bold';
       }
 
-      // Atualiza título da seção conforme a data selecionada
       const titleEl = document.getElementById('done-section-title');
       if (titleEl) {
         titleEl.textContent = doneFilterDate === todayStr
-          ? '✅ Pets Finalizados Hoje (Operacional)'
+          ? '✅ Pets Finalizados Hoje (Aguardando Retirada / Entregues)'
           : `✅ Pets Finalizados — ${formatDateBR(doneFilterDate)}`;
       }
 
-      // Unifica finalizados abertos (bookings) + finalizados de dias encerrados (historyArchive)
+      // Unifica finalizados/entregues abertos + histórico de caixas encerrados
       const activeDone = bookings
-        .filter(b => b.status === 'Finalizado')
+        .filter(b => isServiceFinished(b.status))
         .map(b => ({ ...b, _isArchived: false }));
       const activeDoneIds = new Set(activeDone.map(b => Number(b.id)));
       const archivedDone = (historyArchive || [])
         .filter(h => !activeDoneIds.has(Number(h.id)))
-        .map(h => ({ ...h, status: 'Finalizado', _isArchived: true }));
+        .map(h => ({ ...h, status: 'Entregue', _isArchived: true }));
 
       const allDone = [...activeDone, ...archivedDone];
 
-      // O badge da aba superior mostra sempre o total de HOJE
       const todayDoneCount = allDone.filter(b => (b.date || todayStr) === todayStr).length;
       const tabDoneBadge = document.getElementById('tab-done-badge');
       if (tabDoneBadge) tabDoneBadge.textContent = todayDoneCount;
 
-      // Filtra estritamente pela data escolhida (por padrão: hoje)
       const filteredDone = allDone.filter(b => (b.date || todayStr) === doneFilterDate);
       document.getElementById('counter-stat-done').textContent = filteredDone.length;
 
@@ -2438,39 +2441,91 @@
 
       list.innerHTML = filteredDone.map(b => {
         const payInfo = pdvState.paidBookings[b.id];
+        const isDelivered = b.status === 'Entregue' || b._isArchived;
+
+        const deliveryBadge = isDelivered
+          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✅ Entregue ao Dono</span>`
+          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">✨ Finalizado • Aguardando Dono</span>`;
+
         let payBadge = '';
         if (b._isArchived) {
           payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700">🔒 Caixa Encerrado</span>`;
         } else if (payInfo) {
           payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-800">💚 Pago (${payInfo.method})</span>`;
         } else {
-          payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⏳ Falta Acertar</span>`;
+          payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⏳ Falta Receber</span>`;
         }
 
-        const footerActions = b._isArchived
+        let mainButtonsHtml = '';
+        if (!b._isArchived) {
+          if (!isDelivered && !payInfo) {
+            // Finalizado aguardando dono e ainda não pago
+            mainButtonsHtml = `
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t" style="border-color: var(--brand-card-border);">
+                <button onclick="notifyReady(${b.id})" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1">
+                  📲 Avisar Zap
+                </button>
+                <button onclick="openCheckoutModal(${b.id})" class="py-2 px-3 rounded-xl brand-accent-bg text-xs font-bold shadow-sm flex items-center justify-center gap-1">
+                  💳 Receber e Entregar
+                </button>
+                <button onclick="changeStatus(${b.id}, 'Entregue')" class="py-2 px-3 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center gap-1">
+                  📦 Entregar (Pagar Depois)
+                </button>
+              </div>
+            `;
+          } else if (!isDelivered && payInfo) {
+            // Pago antecipado, aguardando dono retirar
+            mainButtonsHtml = `
+              <div class="grid grid-cols-2 gap-2 pt-2 border-t" style="border-color: var(--brand-card-border);">
+                <button onclick="notifyReady(${b.id})" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1">
+                  📲 Avisar Zap
+                </button>
+                <button onclick="changeStatus(${b.id}, 'Entregue')" class="py-2 px-3 rounded-xl bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1">
+                  📦 Confirmar Entrega
+                </button>
+              </div>
+            `;
+          } else if (isDelivered && !payInfo) {
+            // Já entregue ao dono, mas falta acertar pagamento
+            mainButtonsHtml = `
+              <div class="pt-2 border-t flex items-center justify-between gap-2" style="border-color: var(--brand-card-border);">
+                <span class="text-[11px] font-semibold text-amber-800">⚠️ Pet já retirado — pagamento pendente no Caixa:</span>
+                <button onclick="openCheckoutModal(${b.id})" class="px-3.5 py-2 rounded-xl bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm shrink-0">
+                  💳 Receber Agora
+                </button>
+              </div>
+            `;
+          }
+        }
+
+        const footerLinks = b._isArchived
           ? `<span class="text-[11px] text-slate-500 font-semibold">📁 Registro arquivado no histórico do dia</span>`
           : `
-            <button onclick="changeStatus(${b.id}, 'Pronto')" class="text-[11px] text-blue-600 font-semibold underline">
-              ↩️ Voltar p/ Fila
-            </button>
-            ${!payInfo ? `
-              <button onclick="openCheckoutModal(${b.id})" class="px-3 py-1.5 rounded-lg bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm">
-                💳 Acertar Agora
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1.5 text-[11px]">
+              <button onclick="changeStatus(${b.id}, 'No Banho / Tosa')" class="text-blue-600 font-semibold underline">
+                ↩️ Voltar p/ Fila de Banho
               </button>
-            ` : `
-              <button onclick="undoBookingPayment(${b.id})" class="text-[11px] text-slate-500 underline">
-                Estornar Pagamento
-              </button>
-            `}
+              <div class="flex items-center gap-3">
+                ${isDelivered && !b._isArchived ? `<button onclick="changeStatus(${b.id}, 'Finalizado')" class="text-slate-500 underline">Desfazer Entrega</button>` : ''}
+                ${payInfo ? `<button onclick="undoBookingPayment(${b.id})" class="text-slate-500 underline">Estornar Pagamento</button>` : ''}
+              </div>
+            </div>
           `;
 
+        const cardBorderClass = !payInfo && !b._isArchived
+          ? 'border-2 border-amber-300 bg-amber-50/70'
+          : !isDelivered
+            ? 'border-2 border-purple-300 bg-purple-50/50'
+            : 'border theme-stage-box';
+
         return `
-          <div class="p-3.5 rounded-xl border ${payInfo || b._isArchived ? 'theme-stage-box' : 'border-amber-300 bg-amber-50/70'} space-y-2">
+          <div class="p-3.5 rounded-xl ${cardBorderClass} space-y-2">
             <div class="flex flex-wrap items-center justify-between gap-1">
-              <div>
+              <div class="flex flex-wrap items-center gap-1">
                 <span class="font-bold text-sm text-slate-800">🐾 ${b.petName}</span>
-                <span class="text-[11px] text-slate-500 ml-1">(${b.sizeName || 'Padrão'})</span>
-                <span class="ml-1">${payBadge}</span>
+                <span class="text-[11px] text-slate-500">(${b.sizeName || 'Padrão'})</span>
+                ${deliveryBadge}
+                ${payBadge}
               </div>
               <span class="font-brand text-sm font-bold brand-accent-text">R$ ${formatMoney(payInfo ? payInfo.amount : b.total)}</span>
             </div>
@@ -2479,15 +2534,14 @@
               <p><strong>Tutor:</strong> ${b.ownerName} • 📞 ${b.ownerPhone} ${b.ownerAddress ? `• 📍 ${b.ownerAddress}` : ''}</p>
               <p class="text-[11px] text-slate-500">🕒 Atendimento de ${formatDateBR(b.date)} às ${b.time || '--:--'}</p>
             </div>
-            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t" style="border-color: var(--brand-card-border);">
-              ${footerActions}
-            </div>
+            ${mainButtonsHtml}
+            ${footerLinks}
           </div>
         `;
       }).join('');
     }
 
-    // ================= ABA 5: CAIXA PDV (MODO DISCRETO + FECHAMENTO EM MODAL) =================
+    // ================= ABA 4: CAIXA PDV (FILA DE RETIRADA & RECEBIMENTO + FECHAMENTO PRIVADO) =================
     function openRegisterClosingModal() {
       renderCaixaPDV();
       document.getElementById('register-closing-modal').classList.remove('hidden');
@@ -2501,44 +2555,60 @@
 
     function renderCaixaPDV() {
       const todayStr = getTodayLocalStr();
-      const todayBookings = bookings.filter(b => !b.date || b.date <= todayStr || b.status === 'Finalizado');
+      const todayBookings = bookings.filter(b => !b.date || b.date <= todayStr || isServiceFinished(b.status));
       
-      // Separa quem já está Pronto / Finalizado para acertar vs quem ainda está em banho/espera
-      const readyToPayBookings = todayBookings.filter(b => !pdvState.paidBookings[b.id] && (b.status === 'Pronto' || b.status === 'Finalizado'));
-      const inProgressUnpaidBookings = todayBookings.filter(b => !pdvState.paidBookings[b.id] && b.status !== 'Pronto' && b.status !== 'Finalizado');
+      // Fila do PDV: todos os pets finalizados (aguardando dono ou já entregues sem pagar)
+      const finishedUnpaidBookings = todayBookings.filter(b => !pdvState.paidBookings[b.id] && isServiceFinished(b.status));
+      // Pets ainda na banheira/espera (para pagamento antecipado)
+      const inProgressUnpaidBookings = todayBookings.filter(b => !pdvState.paidBookings[b.id] && !isServiceFinished(b.status));
       
       const tabUnpaidBadge = document.getElementById('tab-unpaid-badge');
       if (tabUnpaidBadge) {
-        if (readyToPayBookings.length > 0) {
-          tabUnpaidBadge.textContent = readyToPayBookings.length;
+        if (finishedUnpaidBookings.length > 0) {
+          tabUnpaidBadge.textContent = finishedUnpaidBookings.length;
           tabUnpaidBadge.classList.remove('hidden');
         } else {
           tabUnpaidBadge.classList.add('hidden');
         }
       }
 
-      document.getElementById('pdv-pending-count').textContent = readyToPayBookings.length;
+      document.getElementById('pdv-pending-count').textContent = finishedUnpaidBookings.length;
       const pendingListEl = document.getElementById('pdv-pending-list');
-      if (readyToPayBookings.length === 0) {
-        pendingListEl.innerHTML = `<p class="text-center py-4 text-xs text-slate-400">Nenhum pet pronto aguardando acerto no momento. 🎉</p>`;
+      if (finishedUnpaidBookings.length === 0) {
+        pendingListEl.innerHTML = `<p class="text-center py-4 text-xs text-slate-400">Nenhum pet finalizado aguardando recebimento no momento. 🎉</p>`;
       } else {
-        pendingListEl.innerHTML = readyToPayBookings.map(b => `
-          <div class="p-3 rounded-xl border-2 border-purple-300 bg-purple-50/60 flex items-center justify-between gap-2">
-            <div>
-              <div class="flex items-center gap-1.5">
-                <strong class="text-sm text-slate-800">🐾 ${b.petName}</strong>
-                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-100 text-purple-800">${b.status === 'Finalizado' ? 'Entregue (Falta Acertar)' : '✨ Pronto p/ Saída'}</span>
+        pendingListEl.innerHTML = finishedUnpaidBookings.map(b => {
+          const isAlreadyDelivered = b.status === 'Entregue';
+          const statusTag = isAlreadyDelivered
+            ? `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">📦 Já Entregue • Falta Receber</span>`
+            : `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-100 text-purple-800">✨ Finalizado • Aguardando Dono</span>`;
+          const btnLabel = isAlreadyDelivered ? '💳 Receber Agora' : '💳 Receber e Dar Saída';
+
+          return `
+            <div class="p-3 rounded-xl border-2 ${isAlreadyDelivered ? 'border-amber-300 bg-amber-50/70' : 'border-purple-300 bg-purple-50/60'} flex flex-wrap items-center justify-between gap-2">
+              <div class="flex-1 min-w-[180px]">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <strong class="text-sm text-slate-800">🐾 ${b.petName}</strong>
+                  ${statusTag}
+                </div>
+                <span class="block text-xs text-slate-600 mt-0.5">${b.serviceName} • 👤 ${b.ownerName} (${b.ownerPhone})</span>
               </div>
-              <span class="block text-xs text-slate-600 mt-0.5">${b.serviceName} • 👤 ${b.ownerName}</span>
+              <div class="text-right shrink-0 space-y-1">
+                <span class="block font-brand text-base font-bold brand-accent-text">R$ ${formatMoney(b.total)}</span>
+                <div class="flex items-center gap-1.5 justify-end">
+                  ${!isAlreadyDelivered ? `
+                    <button onclick="changeStatus(${b.id}, 'Entregue')" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-[11px] font-bold" title="Marcar como entregue e receber depois">
+                      📦 Só Entregar
+                    </button>
+                  ` : ''}
+                  <button onclick="openCheckoutModal(${b.id})" class="px-3.5 py-1.5 rounded-lg bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm">
+                    ${btnLabel}
+                  </button>
+                </div>
+              </div>
             </div>
-            <div class="text-right shrink-0">
-              <span class="block font-brand text-base font-bold brand-accent-text">R$ ${formatMoney(b.total)}</span>
-              <button onclick="openCheckoutModal(${b.id})" class="mt-1 px-3.5 py-1.5 rounded-lg bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm">
-                💳 Acertar / Receber
-              </button>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
 
       // Renderiza lista secundária recolhida de pets ainda em banho/fila (para cobrança antecipada)
@@ -2666,18 +2736,21 @@
       if (!b) return;
       checkoutBookingId = bookingId;
       document.getElementById('checkout-item-title').textContent = `🐾 ${b.petName} — ${b.serviceName}`;
-      document.getElementById('checkout-item-sub').textContent = `Tutor: ${b.ownerName} • Status atual: ${b.status}`;
+      document.getElementById('checkout-item-sub').textContent = `Tutor: ${b.ownerName} • Situação: ${b.status}`;
       document.getElementById('checkout-final-amount').value = (Number(b.total) || 0).toFixed(2);
       document.getElementById('checkout-cash-received').value = '';
 
       const hintEl = document.getElementById('checkout-flow-hint');
-      if (hintEl) {
-        if (b.status === 'Pronto' || b.status === 'Finalizado') {
+      const confirmBtn = document.getElementById('btn-confirm-checkout');
+      if (hintEl && confirmBtn) {
+        if (isServiceFinished(b.status)) {
           hintEl.className = 'text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl';
-          hintEl.innerHTML = '✅ Ao confirmar, o pagamento será lançado no caixa e o pet será movido automaticamente para <strong>Finalizados</strong>.';
+          hintEl.innerHTML = '✅ Ao confirmar, o pagamento será lançado no caixa e o pet ficará marcado como <strong>Entregue</strong>.';
+          confirmBtn.textContent = '✅ Receber e Entregar';
         } else {
           hintEl.className = 'text-[11px] font-semibold text-cyan-800 bg-cyan-50 border border-cyan-200 px-3 py-2 rounded-xl';
           hintEl.innerHTML = 'ℹ️ Pagamento antecipado: o pet continuará na <strong>Fila</strong> com o selo <strong>💚 Pago</strong> até terminar o banho.';
+          confirmBtn.textContent = '✅ Confirmar Pagamento';
         }
       }
 
@@ -2726,9 +2799,9 @@
       if (finalAmt <= 0) return alert('Informe um valor válido.');
 
       b.total = finalAmt;
-      // Se já estava Pronto (ou Finalizado), conclui automaticamente para ✅ Finalizados
-      if (b.status === 'Pronto' || b.status === 'Finalizado') {
-        b.status = 'Finalizado';
+      // Se o serviço já foi finalizado, confirma também a entrega ao dono
+      if (isServiceFinished(b.status)) {
+        b.status = 'Entregue';
       }
 
       localStorage.setItem('recanto_bookings_v25', JSON.stringify(bookings));
@@ -2827,7 +2900,7 @@
 
     function baterEEncerrarCaixa() {
       const todayStr = getTodayLocalStr();
-      const doneBookings = bookings.filter(b => b.status === 'Finalizado');
+      const doneBookings = bookings.filter(b => isServiceFinished(b.status));
       const unpaidDone = doneBookings.filter(b => !pdvState.paidBookings[b.id]);
 
       if (unpaidDone.length > 0) {
@@ -2872,7 +2945,7 @@
       }
 
       if (doneBookings.length > 0) {
-        const toArchive = doneBookings.map(item => ({ ...item, closedAt: new Date().toISOString() }));
+        const toArchive = doneBookings.map(item => ({ ...item, status: 'Finalizado', closedAt: new Date().toISOString() }));
         toArchive.forEach(item => {
           if (!historyArchive.find(h => h.id === item.id)) {
             historyArchive.unshift(item);
@@ -2882,10 +2955,10 @@
         cloudArchiveDay(toArchive);
       }
 
-      const todayOpen = bookings.filter(b => b.status !== 'Finalizado' && (!b.date || b.date <= todayStr));
+      const todayOpen = bookings.filter(b => !isServiceFinished(b.status) && (!b.date || b.date <= todayStr));
       todayOpen.forEach(item => cloudDeleteBooking(item.id));
 
-      bookings = bookings.filter(b => b.status !== 'Finalizado' && b.date > todayStr);
+      bookings = bookings.filter(b => !isServiceFinished(b.status) && b.date > todayStr);
       localStorage.setItem('recanto_bookings_v25', JSON.stringify(bookings));
 
       pdvState.openingFloat = 0;
@@ -2905,39 +2978,27 @@
         'Aguardando': 'bg-amber-100 text-amber-800',
         'No Banho / Tosa': 'bg-cyan-100 text-cyan-800',
         'Pronto': 'bg-purple-100 text-purple-800',
-        'Finalizado': 'bg-green-100 text-green-800'
+        'Finalizado': 'bg-purple-100 text-purple-800',
+        'Entregue': 'bg-green-100 text-green-800'
       };
       
-      const isPronto = b.status === 'Pronto';
       const payInfo = pdvState.paidBookings[b.id];
       const payBadge = payInfo
         ? `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 ml-1">💚 Pago (${payInfo.method})</span>`
         : `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-white/80 border border-slate-200 text-slate-600 ml-1">⏳ A pagar</span>`;
 
-      const readyActionBar = (!isAdmin && isPronto) ? `
-        <div class="grid grid-cols-2 gap-2 pt-2 border-t mt-2" style="border-color: var(--brand-card-border);">
-          <button onclick="notifyReady(${b.id})" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
-            📲 Avisar Zap
-          </button>
-          ${!payInfo ? `
-            <button onclick="openCheckoutModal(${b.id})" class="py-2 px-3 rounded-xl brand-accent-bg text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
-              💳 Acertar / Receber
-            </button>
-          ` : `
-            <button onclick="changeStatus(${b.id}, 'Finalizado')" class="py-2 px-3 rounded-xl bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
-              ✅ Concluir Entrega
-            </button>
-          `}
-        </div>
-      ` : '';
+      const quickActionBtn = !isAdmin ? (
+        b.status === 'Aguardando'
+          ? `<button onclick="changeStatus(${b.id}, 'No Banho / Tosa')" class="w-full py-2 px-3 rounded-xl brand-primary-bg text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 mt-2">🛁 Iniciar Banho / Tosa</button>`
+          : `<button onclick="changeStatus(${b.id}, 'Finalizado')" class="w-full py-2 px-3 rounded-xl bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 mt-2">✅ Finalizar Banho/Tosa (Mover p/ Finalizados e PDV)</button>`
+      ) : '';
 
       const controlsHtml = isAdmin ? '' : `
         <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t mt-2" style="border-color: var(--brand-card-border);">
           <select onchange="changeStatus(${b.id}, this.value)" class="text-[11px] border border-slate-300 rounded-lg px-2 py-2 bg-white font-semibold flex-1 min-w-[140px]">
             <option value="Aguardando" ${b.status === 'Aguardando' ? 'selected' : ''}>⏳ Aguardando</option>
             <option value="No Banho / Tosa" ${b.status === 'No Banho / Tosa' ? 'selected' : ''}>🛁 No Banho / Tosa</option>
-            <option value="Pronto" ${b.status === 'Pronto' ? 'selected' : ''}>✨ Pronto (Aguardando Retirada)</option>
-            <option value="Finalizado" ${b.status === 'Finalizado' ? 'selected' : ''}>✅ Entregar sem cobrar agora</option>
+            <option value="Finalizado">✅ Finalizado (Aguardando Dono)</option>
           </select>
           
           <button onclick="openRescheduleModal(${b.id})" class="px-2.5 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 text-[11px] font-bold shrink-0" title="Remarcar">📅</button>
@@ -2945,12 +3006,8 @@
         </div>
       `;
 
-      const cardStyle = isPronto && !isAdmin
-        ? 'p-3.5 rounded-xl border-2 border-purple-400 bg-purple-50/60 space-y-2 shadow-sm'
-        : 'p-3.5 rounded-xl border theme-stage-box space-y-2';
-
       return `
-        <div class="${cardStyle}">
+        <div class="p-3.5 rounded-xl border theme-stage-box space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-1">
             <div>
               <span class="font-bold text-sm text-slate-800">${b.petName}</span>
@@ -2962,7 +3019,7 @@
           <p class="text-xs text-slate-700"><strong>Serviço:</strong> ${b.serviceName} ${b.extras?.length ? `(+ ${b.extras.join(', ')})` : ''}</p>
           <p class="text-[11px] text-slate-600">🕒 ${formatDateBR(b.date)} às ${b.time || '--:--'} • 👤 ${b.ownerName}</p>
           ${b.notes ? `<p class="text-[11px] text-amber-800 bg-amber-50 px-2 py-1 rounded mt-1">⚠️ Obs: ${b.notes}</p>` : ''}
-          ${readyActionBar}
+          ${quickActionBtn}
           ${controlsHtml}
         </div>
       `;
@@ -2972,8 +3029,8 @@
     function renderAdminBookings() {
       const todayStr = getTodayLocalStr();
       const list = document.getElementById('admin-bookings-list');
-      const todayBookings = bookings.filter(b => !b.date || b.date <= todayStr || b.status === 'Finalizado');
-      const doneBookings = todayBookings.filter(b => b.status === 'Finalizado');
+      const todayBookings = bookings.filter(b => !b.date || b.date <= todayStr || isServiceFinished(b.status));
+      const doneBookings = todayBookings.filter(b => isServiceFinished(b.status));
       
       const inStore = todayBookings.length - doneBookings.length;
       let paidRev = 0;
@@ -3009,7 +3066,7 @@
     }
 
     function renderHistoryAnalytics() {
-      const todayDone = bookings.filter(b => b.status === 'Finalizado');
+      const todayDone = bookings.filter(b => isServiceFinished(b.status));
       const allRecords = [...todayDone];
       historyArchive.forEach(h => {
         if (!allRecords.find(r => r.id === h.id)) allRecords.push(h);
@@ -3234,7 +3291,7 @@
 
     function exportFullBackup() {
       const backupData = {
-        version: 'v34',
+        version: 'v35',
         exportedAt: new Date().toISOString(),
         config,
         pdvState,
