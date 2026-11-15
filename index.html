@@ -320,7 +320,7 @@
           <div class="flex items-center justify-between border-b pb-2.5 mb-3" style="border-color: var(--brand-card-border);">
             <div>
               <h3 class="font-bold text-slate-800 text-sm sm:text-base">📋 Pets na Fila de Hoje</h3>
-              <p class="text-[11px] text-slate-500">Pets agendados para hoje aparecem aqui automaticamente.</p>
+              <p class="text-[11px] text-slate-500">Mude para <strong>✨ Pronto</strong> para liberar o aviso no Zap e o acerto no Caixa (que finaliza o pet automaticamente).</p>
             </div>
             <span id="counter-badge-active" class="text-xs brand-primary-bg px-2.5 py-1 rounded-full font-bold">0</span>
           </div>
@@ -362,7 +362,7 @@
             <div class="flex items-center justify-between gap-2">
               <div>
                 <h3 id="done-section-title" class="font-bold text-slate-800 text-sm sm:text-base">✅ Pets Finalizados Hoje (Operacional)</h3>
-                <p class="text-[11px] text-slate-500">Controle de produção: veja os atendimentos concluídos hoje ou mude a data para consultar dias passados.</p>
+                <p class="text-[11px] text-slate-500">Pets concluídos e acertados hoje, ou altere a data para consultar dias anteriores.</p>
               </div>
               <span id="counter-stat-done" class="text-xs bg-[#6AB43E] text-white px-2.5 py-1 rounded-full font-bold shrink-0">0</span>
             </div>
@@ -403,16 +403,25 @@
           </div>
         </div>
 
-        <!-- Bloco Principal: Pets Aguardando Recebimento (Formas de Pagamento mantidas) -->
+        <!-- Bloco 1: Pets Prontos para Acerto (Finaliza automaticamente ao receber) -->
         <div class="bg-white rounded-2xl p-4 shadow-sm border-2 space-y-3" style="border-color: var(--brand-card-border);">
           <div class="flex items-center justify-between border-b pb-2.5" style="border-color: var(--brand-card-border);">
             <div>
-              <h3 class="font-bold text-slate-800 text-sm">⏳ Aguardando Recebimento (Banho & Tosa)</h3>
-              <p class="text-[11px] text-slate-500">Toque em "Receber" para escolher Pix, Crédito, Débito ou Dinheiro.</p>
+              <h3 class="font-bold text-slate-800 text-sm">✨ Prontos para Acerto (Banho & Tosa)</h3>
+              <p class="text-[11px] text-slate-500">Ao confirmar o pagamento abaixo, o pet é movido automaticamente para <strong>✅ Finalizados</strong>.</p>
             </div>
             <span id="pdv-pending-count" class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold">0</span>
           </div>
           <div id="pdv-pending-list" class="space-y-2.5"></div>
+
+          <!-- Bloco Recolhido: Pets ainda em atendimento (para pagamento antecipado na entrada) -->
+          <details id="pdv-inprogress-box" class="hidden pt-2 border-t" style="border-color: var(--brand-card-border);">
+            <summary class="cursor-pointer text-xs font-bold text-slate-600 hover:text-slate-900 select-none flex items-center justify-between py-1">
+              <span>🛁 Ainda em Atendimento na Fila (Cobrança Antecipada)</span>
+              <span id="pdv-inprogress-count" class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px]">0</span>
+            </summary>
+            <div id="pdv-inprogress-list" class="space-y-2 pt-2.5"></div>
+          </details>
         </div>
 
         <!-- Barra Discreta de Encerramento (Abre a conferência apenas ao clicar) -->
@@ -872,6 +881,10 @@
         </div>
       </div>
 
+      <p id="checkout-flow-hint" class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl">
+        ✅ Ao confirmar, o atendimento será marcado como pago e movido para <strong>Finalizados</strong>.
+      </p>
+
       <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1.5">Forma de Pagamento *</label>
         <div class="grid grid-cols-2 gap-2">
@@ -895,7 +908,7 @@
 
       <div class="grid grid-cols-2 gap-2 pt-2">
         <button onclick="closeCheckoutModal()" class="py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Cancelar</button>
-        <button onclick="confirmCheckoutPayment()" class="py-2.5 rounded-xl bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow">✅ Confirmar Recebimento</button>
+        <button onclick="confirmCheckoutPayment()" class="py-2.5 rounded-xl bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow">✅ Acertar e Finalizar</button>
       </div>
     </div>
   </div>
@@ -2431,7 +2444,7 @@
         } else if (payInfo) {
           payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-800">💚 Pago (${payInfo.method})</span>`;
         } else {
-          payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⏳ Aguardando Pagamento</span>`;
+          payBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⏳ Falta Acertar</span>`;
         }
 
         const footerActions = b._isArchived
@@ -2442,7 +2455,7 @@
             </button>
             ${!payInfo ? `
               <button onclick="openCheckoutModal(${b.id})" class="px-3 py-1.5 rounded-lg bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm">
-                💰 Cobrar no Caixa
+                💳 Acertar Agora
               </button>
             ` : `
               <button onclick="undoBookingPayment(${b.id})" class="text-[11px] text-slate-500 underline">
@@ -2490,40 +2503,70 @@
       const todayStr = getTodayLocalStr();
       const todayBookings = bookings.filter(b => !b.date || b.date <= todayStr || b.status === 'Finalizado');
       
-      const pendingBookings = todayBookings.filter(b => !pdvState.paidBookings[b.id]);
+      // Separa quem já está Pronto / Finalizado para acertar vs quem ainda está em banho/espera
+      const readyToPayBookings = todayBookings.filter(b => !pdvState.paidBookings[b.id] && (b.status === 'Pronto' || b.status === 'Finalizado'));
+      const inProgressUnpaidBookings = todayBookings.filter(b => !pdvState.paidBookings[b.id] && b.status !== 'Pronto' && b.status !== 'Finalizado');
       
       const tabUnpaidBadge = document.getElementById('tab-unpaid-badge');
       if (tabUnpaidBadge) {
-        if (pendingBookings.length > 0) {
-          tabUnpaidBadge.textContent = pendingBookings.length;
+        if (readyToPayBookings.length > 0) {
+          tabUnpaidBadge.textContent = readyToPayBookings.length;
           tabUnpaidBadge.classList.remove('hidden');
         } else {
           tabUnpaidBadge.classList.add('hidden');
         }
       }
 
-      document.getElementById('pdv-pending-count').textContent = pendingBookings.length;
+      document.getElementById('pdv-pending-count').textContent = readyToPayBookings.length;
       const pendingListEl = document.getElementById('pdv-pending-list');
-      if (pendingBookings.length === 0) {
-        pendingListEl.innerHTML = `<p class="text-center py-4 text-xs text-slate-400">Todos os atendimentos de hoje já foram pagos! 🎉</p>`;
+      if (readyToPayBookings.length === 0) {
+        pendingListEl.innerHTML = `<p class="text-center py-4 text-xs text-slate-400">Nenhum pet pronto aguardando acerto no momento. 🎉</p>`;
       } else {
-        pendingListEl.innerHTML = pendingBookings.map(b => `
-          <div class="p-3 rounded-xl border border-amber-200 bg-amber-50/70 flex items-center justify-between gap-2">
+        pendingListEl.innerHTML = readyToPayBookings.map(b => `
+          <div class="p-3 rounded-xl border-2 border-purple-300 bg-purple-50/60 flex items-center justify-between gap-2">
             <div>
               <div class="flex items-center gap-1.5">
                 <strong class="text-sm text-slate-800">🐾 ${b.petName}</strong>
-                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-white border border-slate-200 text-slate-600">${b.status}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-100 text-purple-800">${b.status === 'Finalizado' ? 'Entregue (Falta Acertar)' : '✨ Pronto p/ Saída'}</span>
               </div>
               <span class="block text-xs text-slate-600 mt-0.5">${b.serviceName} • 👤 ${b.ownerName}</span>
             </div>
             <div class="text-right shrink-0">
               <span class="block font-brand text-base font-bold brand-accent-text">R$ ${formatMoney(b.total)}</span>
-              <button onclick="openCheckoutModal(${b.id})" class="mt-1 px-3 py-1.5 rounded-lg bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm">
-                💳 Receber
+              <button onclick="openCheckoutModal(${b.id})" class="mt-1 px-3.5 py-1.5 rounded-lg bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm">
+                💳 Acertar / Receber
               </button>
             </div>
           </div>
         `).join('');
+      }
+
+      // Renderiza lista secundária recolhida de pets ainda em banho/fila (para cobrança antecipada)
+      const inProgBox = document.getElementById('pdv-inprogress-box');
+      const inProgCount = document.getElementById('pdv-inprogress-count');
+      const inProgList = document.getElementById('pdv-inprogress-list');
+      if (inProgBox && inProgCount && inProgList) {
+        if (inProgressUnpaidBookings.length > 0) {
+          inProgBox.classList.remove('hidden');
+          inProgCount.textContent = inProgressUnpaidBookings.length;
+          inProgList.innerHTML = inProgressUnpaidBookings.map(b => `
+            <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2 text-xs">
+              <div>
+                <strong class="text-slate-800">🐾 ${b.petName}</strong>
+                <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-white border border-slate-200 text-slate-600 ml-1">${b.status}</span>
+                <span class="block text-[11px] text-slate-500 mt-0.5">${b.serviceName} • ${b.ownerName}</span>
+              </div>
+              <div class="text-right shrink-0">
+                <span class="block font-bold text-slate-700">R$ ${formatMoney(b.total)}</span>
+                <button onclick="openCheckoutModal(${b.id})" class="mt-1 px-2.5 py-1 rounded-lg bg-slate-800 text-white text-[11px] font-bold">
+                  Cobrar Antecipado
+                </button>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          inProgBox.classList.add('hidden');
+        }
       }
 
       const totalsByMethod = { 'Pix': 0, 'Crédito': 0, 'Débito': 0, 'Dinheiro': 0 };
@@ -2623,9 +2666,21 @@
       if (!b) return;
       checkoutBookingId = bookingId;
       document.getElementById('checkout-item-title').textContent = `🐾 ${b.petName} — ${b.serviceName}`;
-      document.getElementById('checkout-item-sub').textContent = `Tutor: ${b.ownerName} • Status: ${b.status}`;
+      document.getElementById('checkout-item-sub').textContent = `Tutor: ${b.ownerName} • Status atual: ${b.status}`;
       document.getElementById('checkout-final-amount').value = (Number(b.total) || 0).toFixed(2);
       document.getElementById('checkout-cash-received').value = '';
+
+      const hintEl = document.getElementById('checkout-flow-hint');
+      if (hintEl) {
+        if (b.status === 'Pronto' || b.status === 'Finalizado') {
+          hintEl.className = 'text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl';
+          hintEl.innerHTML = '✅ Ao confirmar, o pagamento será lançado no caixa e o pet será movido automaticamente para <strong>Finalizados</strong>.';
+        } else {
+          hintEl.className = 'text-[11px] font-semibold text-cyan-800 bg-cyan-50 border border-cyan-200 px-3 py-2 rounded-xl';
+          hintEl.innerHTML = 'ℹ️ Pagamento antecipado: o pet continuará na <strong>Fila</strong> com o selo <strong>💚 Pago</strong> até terminar o banho.';
+        }
+      }
+
       selectPaymentMethod('Pix');
       document.getElementById('checkout-modal').classList.remove('hidden');
       document.getElementById('checkout-modal').classList.add('flex');
@@ -2671,6 +2726,11 @@
       if (finalAmt <= 0) return alert('Informe um valor válido.');
 
       b.total = finalAmt;
+      // Se já estava Pronto (ou Finalizado), conclui automaticamente para ✅ Finalizados
+      if (b.status === 'Pronto' || b.status === 'Finalizado') {
+        b.status = 'Finalizado';
+      }
+
       localStorage.setItem('recanto_bookings_v25', JSON.stringify(bookings));
       cloudUpsertBooking(b);
 
@@ -2854,23 +2914,43 @@
         ? `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 ml-1">💚 Pago (${payInfo.method})</span>`
         : `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-white/80 border border-slate-200 text-slate-600 ml-1">⏳ A pagar</span>`;
 
+      const readyActionBar = (!isAdmin && isPronto) ? `
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t mt-2" style="border-color: var(--brand-card-border);">
+          <button onclick="notifyReady(${b.id})" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
+            📲 Avisar Zap
+          </button>
+          ${!payInfo ? `
+            <button onclick="openCheckoutModal(${b.id})" class="py-2 px-3 rounded-xl brand-accent-bg text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
+              💳 Acertar / Receber
+            </button>
+          ` : `
+            <button onclick="changeStatus(${b.id}, 'Finalizado')" class="py-2 px-3 rounded-xl bg-[#6AB43E] hover:bg-[#5ca034] text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
+              ✅ Concluir Entrega
+            </button>
+          `}
+        </div>
+      ` : '';
+
       const controlsHtml = isAdmin ? '' : `
         <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t mt-2" style="border-color: var(--brand-card-border);">
-          <select onchange="changeStatus(${b.id}, this.value)" class="text-[11px] border border-slate-300 rounded-lg px-2 py-2 bg-white font-semibold flex-1 min-w-[130px]">
+          <select onchange="changeStatus(${b.id}, this.value)" class="text-[11px] border border-slate-300 rounded-lg px-2 py-2 bg-white font-semibold flex-1 min-w-[140px]">
             <option value="Aguardando" ${b.status === 'Aguardando' ? 'selected' : ''}>⏳ Aguardando</option>
-            <option value="No Banho / Tosa" ${b.status === 'No Banho / Tosa' ? 'selected' : ''}>🛁 No Banho</option>
-            <option value="Pronto" ${b.status === 'Pronto' ? 'selected' : ''}>✨ Pronto (Na Loja)</option>
-            <option value="Finalizado" ${b.status === 'Finalizado' ? 'selected' : ''}>✅ Finalizado (Serviço OK)</option>
+            <option value="No Banho / Tosa" ${b.status === 'No Banho / Tosa' ? 'selected' : ''}>🛁 No Banho / Tosa</option>
+            <option value="Pronto" ${b.status === 'Pronto' ? 'selected' : ''}>✨ Pronto (Aguardando Retirada)</option>
+            <option value="Finalizado" ${b.status === 'Finalizado' ? 'selected' : ''}>✅ Entregar sem cobrar agora</option>
           </select>
           
-          ${isPronto ? `<button onclick="notifyReady(${b.id})" class="px-2.5 py-2 rounded-lg bg-green-500 text-white text-[11px] font-bold flex shrink-0" title="Avisar WhatsApp">📲 Avisar</button>` : ''}
           <button onclick="openRescheduleModal(${b.id})" class="px-2.5 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 text-[11px] font-bold shrink-0" title="Remarcar">📅</button>
           <button onclick="cancelOrRemoveBooking(${b.id}, false)" class="px-2 py-2 text-xs text-red-500 hover:bg-red-50 rounded-lg shrink-0" title="Remover">🗑️</button>
         </div>
       `;
 
+      const cardStyle = isPronto && !isAdmin
+        ? 'p-3.5 rounded-xl border-2 border-purple-400 bg-purple-50/60 space-y-2 shadow-sm'
+        : 'p-3.5 rounded-xl border theme-stage-box space-y-2';
+
       return `
-        <div class="p-3.5 rounded-xl border theme-stage-box space-y-2">
+        <div class="${cardStyle}">
           <div class="flex flex-wrap items-center justify-between gap-1">
             <div>
               <span class="font-bold text-sm text-slate-800">${b.petName}</span>
@@ -2882,6 +2962,7 @@
           <p class="text-xs text-slate-700"><strong>Serviço:</strong> ${b.serviceName} ${b.extras?.length ? `(+ ${b.extras.join(', ')})` : ''}</p>
           <p class="text-[11px] text-slate-600">🕒 ${formatDateBR(b.date)} às ${b.time || '--:--'} • 👤 ${b.ownerName}</p>
           ${b.notes ? `<p class="text-[11px] text-amber-800 bg-amber-50 px-2 py-1 rounded mt-1">⚠️ Obs: ${b.notes}</p>` : ''}
+          ${readyActionBar}
           ${controlsHtml}
         </div>
       `;
@@ -3153,7 +3234,7 @@
 
     function exportFullBackup() {
       const backupData = {
-        version: 'v33',
+        version: 'v34',
         exportedAt: new Date().toISOString(),
         config,
         pdvState,
